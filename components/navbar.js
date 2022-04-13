@@ -19,11 +19,21 @@ class Navbar extends Component {
       },
     ],
   };
+  componentDidMount() {
+    this.pageURL();
+  }
+  pageURL() {
+    if (window.location.pathname.includes("/product")) {
+      this.setState({ active: "Product" });
+    } else if (window.location.pathname.includes("/category")) {
+      this.setState({ active: "Category" });
+    }
+    console.log("BBBBBBBBB", window.location.pathname);
+  }
 
   render() {
     const { router } = this.props;
     const { active, menu } = this.state;
-    console.log("AAAAAAAAAAA", active);
     return (
       <nav className="bg-gray-800">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -72,7 +82,7 @@ class Navbar extends Component {
             </div>
             <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
               <nav className="text-gray-300">
-                <Link href="#">RF|DA</Link>
+                <Link href="/">RF|DA</Link>
               </nav>
               <div className="hidden sm:block sm:ml-6 w-full">
                 <div className="flex space-x-4">
