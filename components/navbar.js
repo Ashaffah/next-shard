@@ -28,7 +28,7 @@ class Navbar extends Component {
     } else if (window.location.pathname.includes("/category")) {
       this.setState({ active: "Category" });
     }
-    console.log("BBBBBBBBB", window.location.pathname);
+    // console.log("BBBBBBBBB", window.location.pathname);
   }
 
   render() {
