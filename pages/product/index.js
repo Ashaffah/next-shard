@@ -10,7 +10,7 @@ class Product extends Component {
     this.getProduct();
   }
 
-  getProduct(page = 1, perPage = 10) {
+  getProduct(page = 1, perPage = 12) {
     const paramPage = page !== 1 ? page : "";
 
     // console.log("paramPage", paramPage)
@@ -69,6 +69,9 @@ class Product extends Component {
                           </h5>
                           <p className="text-gray-700 text-base mb-4">
                             {product.price}
+                          </p>
+                          <p className="text-orange-600 font-bold text-base mb-4">
+                            {product.selling_price}
                           </p>
                         </div>
                       </div>
