@@ -56,13 +56,16 @@ class Product extends Component {
                       className="flex justify-center w-full lg:my-2 lg:px-2 lg:w-1/4 xl:my-2 xl:px-2 xl:w-1/4"
                     >
                       <div className="rounded-lg shadow-lg bg-white max-w-sm">
-                        <a href="#!">
+                        <div>
                           <img
-                            className="rounded-t-lg"
-                            src="https://mdbootstrap.com/img/new/standard/nature/184.jpg"
+                            className="rounded-t-lg w-full"
+                            src={
+                              `https://backend-express-rfda.herokuapp.com/` +
+                              product.image
+                            }
                             alt=""
                           />
-                        </a>
+                        </div>
                         <div className="p-6">
                           <h5 className="text-gray-900 text-xl font-medium mb-2">
                             {product.title}
