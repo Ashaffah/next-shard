@@ -1,6 +1,8 @@
 import { Component } from "react";
 import Navbar from "../../components/navbar";
 import axios from "axios";
+import CurrencyFormat from "react-currency-format";
+
 class Product extends Component {
   state = {
     product: {},
@@ -17,7 +19,7 @@ class Product extends Component {
 
     axios
       .get(
-        `https://backend-express-rfda.herokuapp.com/products?page=${paramPage}&perPage=${perPage}`
+        `${process.env.NEXT_PUBLIC_MY_BASE_URL}/products?page=${paramPage}&perPage=${perPage}`
       )
       .then((res) => {
         this.setState({ product: res.data.data });
@@ -37,7 +39,6 @@ class Product extends Component {
   }
   render() {
     const { product } = this.state;
-    console.log("AAAAA", product);
     return (
       <>
         <Navbar />
@@ -53,29 +54,48 @@ class Product extends Component {
                   product.map((product, index) => (
                     <div
                       key={index}
-                      className="flex justify-center w-full lg:my-2 lg:px-2 lg:w-1/4 xl:my-2 xl:px-2 xl:w-1/4"
+                      className="justify-center w-full lg:my-2 lg:px-2 lg:w-1/4 xl:my-2 xl:px-2 xl:w-1/4"
                     >
                       <div className="rounded-lg shadow-lg bg-white max-w-sm">
                         <div>
                           <img
                             className="rounded-t-lg w-full"
                             src={
-                              `https://backend-express-rfda.herokuapp.com/` +
+                              `${process.env.NEXT_PUBLIC_MY_BASE_URL}/` +
                               product.image
                             }
-                            alt=""
+                            alt={product.name}
                           />
                         </div>
                         <div className="p-6">
                           <h5 className="text-gray-900 text-xl font-medium mb-2">
                             {product.title}
                           </h5>
-                          <p className="text-gray-700 text-base mb-4">
-                            {product.price}
-                          </p>
-                          <p className="text-orange-600 font-bold text-base mb-4">
-                            {product.selling_price}
-                          </p>
+                          <div className="flex mb-5">
+                            <div className="bg-emerald-500 text-white px-2 mr-2 rounded-lg text-center">
+                              {(
+                                (product.selling_price / product.price) *
+                                100
+                              ).toFixed(0)}
+                              %
+                            </div>
+                            <div className="text-gray-700 text-base">
+                              <CurrencyFormat
+                                value={product.price}
+                                displayType={"text"}
+                                thousandSeparator={true}
+                                prefix={"Rp. "}
+                              />
+                            </div>
+                          </div>
+                          <div className="text-orange-600 font-bold text-base ">
+                            <CurrencyFormat
+                              value={product.selling_price}
+                              displayType={"text"}
+                              thousandSeparator={true}
+                              prefix={"Rp. "}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>

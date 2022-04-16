@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "axios": "^0.26.1",
+    "dotenv": "^16.0.0",
     "next": "12.1.4",
     "postcss-preset-env": "^7.4.3",
     "react": "18.0.0",
+    "react-currency-format": "^1.1.0",
     "react-dom": "18.0.0"
   },
   "devDependencies": {
