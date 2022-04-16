@@ -56,7 +56,7 @@ class Product extends Component {
                       key={index}
                       className="justify-center w-full lg:my-2 lg:px-2 lg:w-1/4 xl:my-2 xl:px-2 xl:w-1/4"
                     >
-                      <div className="rounded-lg shadow-lg bg-white max-w-sm">
+                      <div className="rounded-lg shadow-lg bg-white max-w-sm h-full">
                         <div>
                           <img
                             className="rounded-t-lg w-full"
@@ -71,31 +71,49 @@ class Product extends Component {
                           <h5 className="text-gray-900 text-xl font-medium mb-2">
                             {product.title}
                           </h5>
-                          <div className="flex mb-5">
-                            <div className="bg-emerald-500 text-white px-2 mr-2 rounded-lg text-center">
-                              {(
-                                (product.selling_price / product.price) *
-                                100
-                              ).toFixed(0)}
-                              %
-                            </div>
-                            <div className="text-gray-700 text-base">
-                              <CurrencyFormat
-                                value={product.price}
-                                displayType={"text"}
-                                thousandSeparator={true}
-                                prefix={"Rp. "}
-                              />
-                            </div>
-                          </div>
-                          <div className="text-orange-600 font-bold text-base ">
-                            <CurrencyFormat
-                              value={product.selling_price}
-                              displayType={"text"}
-                              thousandSeparator={true}
-                              prefix={"Rp. "}
-                            />
-                          </div>
+
+                          {product.selling_price > 0 ? (
+                            <>
+                              <div className="flex mb-5">
+                                <div className="bg-emerald-500 text-white px-2 mr-2 rounded-lg text-center">
+                                  {(
+                                    (product.selling_price / product.price) *
+                                    100
+                                  ).toFixed(0)}
+                                  %
+                                </div>
+                                <div className="text-gray-700 text-base line-through">
+                                  <CurrencyFormat
+                                    value={product.price}
+                                    displayType={"text"}
+                                    thousandSeparator={true}
+                                    prefix={"Rp. "}
+                                  />
+                                </div>
+                              </div>
+                              <div className="text-orange-600 font-bold text-base ">
+                                <CurrencyFormat
+                                  value={product.selling_price}
+                                  displayType={"text"}
+                                  thousandSeparator={true}
+                                  prefix={"Rp. "}
+                                />
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="flex">
+                                <div className="text-orange-600 font-bold text-base ">
+                                  <CurrencyFormat
+                                    value={product.price}
+                                    displayType={"text"}
+                                    thousandSeparator={true}
+                                    prefix={"Rp. "}
+                                  />
+                                </div>
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
