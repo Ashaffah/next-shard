@@ -6,15 +6,33 @@ import CurrencyFormat from "react-currency-format";
 class Product extends Component {
   state = {
     product: {},
+    category: {},
+    dataFilter: {
+      page: 1,
+      category: {},
+      delivery: {},
+    },
   };
 
   componentDidMount() {
     this.getProduct();
+    this.getCategory();
   }
+
+  getCategory = async () => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_MY_BASE_URL}/category`)
+      .then((res) => {
+        this.setState({ category: res.data.data });
+        console.log("DATA", res.data.data);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  };
 
   getProduct(page = 1, perPage = 12) {
     const paramPage = page !== 1 ? page : "";
-
     // console.log("paramPage", paramPage)
 
     axios
@@ -38,14 +56,50 @@ class Product extends Component {
       });
   }
   render() {
-    const { product } = this.state;
+    const { product, category, dataFilter } = this.state;
+
     return (
       <>
         <Navbar />
         <div className="container mx-auto mt-20 py-4 md:py-8">
           <div className="flex flex-wrap">
             <div className="border h-20 w-full lg:w-3/12 xl:w-3/12">
-              <div className="border m-2">filter</div>
+              <div className="text-black text-2xl text-center font-bold">
+                Filter
+              </div>
+              <div className="text-black text-xl text-left">Kategory</div>
+              {console.log("~~~~~~~~~~~~~~~~", dataFilter.category.name)}
+              {category.length > 0 &&
+                category.map((val, index) => (
+                  <div
+                    className="text-black text-left cursor-pointer"
+                    key={index}
+                  >
+                    <span
+                      className={
+                        dataFilter.category.name === val.name
+                          ? "text-black font-bold"
+                          : null
+                      }
+                      onClick={() => {
+                        this.getProduct(val.id, dataFilter.delivery.id);
+                        // setDataFilter((prevState) => ({
+                        //   ...prevState,
+                        //   category: val,
+                        // }));
+                        this.setState({
+                          dataFilter: {
+                            ...this.state.dataFilter,
+                            category: val,
+                          },
+                        });
+                      }}
+                    >
+                      <input type="checkbox" className="default:ring-2" />
+                      {val.name}
+                    </span>
+                  </div>
+                ))}
             </div>
 
             <div className="border h-20 w-full lg:w-9/12 xl:w-9/12">
