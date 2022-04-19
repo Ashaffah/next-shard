@@ -7,6 +7,7 @@ class Product extends Component {
   state = {
     product: {},
     category: {},
+    delivery: {},
     dataFilter: {
       page: 1,
       category: {},
@@ -17,14 +18,26 @@ class Product extends Component {
   componentDidMount() {
     this.getProduct();
     this.getCategory();
+    this.getDelivery();
   }
+  getDelivery = async () => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_MY_BASE_URL}/delivery`)
+      .then((res) => {
+        this.setState({ delivery: res.data.data });
+        console.log("DELIVERY", res.data.data);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  };
 
   getCategory = async () => {
     axios
       .get(`${process.env.NEXT_PUBLIC_MY_BASE_URL}/category`)
       .then((res) => {
         this.setState({ category: res.data.data });
-        console.log("DATA", res.data.data);
+        // console.log("DATA", res.data.data);
       })
       .catch((error) => {
         alert(error);
@@ -56,7 +69,7 @@ class Product extends Component {
       });
   }
   render() {
-    const { product, category, dataFilter } = this.state;
+    const { product, category, dataFilter, delivery } = this.state;
 
     return (
       <>
@@ -68,7 +81,7 @@ class Product extends Component {
                 Filter
               </div>
               <div className="text-black text-xl text-left">Kategory</div>
-              {console.log("~~~~~~~~~~~~~~~~", dataFilter.category.name)}
+              {/* {console.log("~~~~~~~~~~~~~~~~", dataFilter.category.name)} */}
               {category.length > 0 &&
                 category.map((val, index) => (
                   <div
@@ -91,6 +104,35 @@ class Product extends Component {
                           dataFilter: {
                             ...this.state.dataFilter,
                             category: val,
+                          },
+                        });
+                      }}
+                    >
+                      <input type="checkbox" className="default:ring-2" />
+                      {val.name}
+                    </span>
+                  </div>
+                ))}
+              <div className="text-black text-xl text-left">Pengiriman</div>
+              {console.log("@@@@@@@@@@@@@@@@@", dataFilter.delivery.name)}
+              {delivery.length > 0 &&
+                delivery.map((val, index) => (
+                  <div
+                    className="text-black text-left cursor-pointer"
+                    key={index}
+                  >
+                    <span
+                      className={
+                        dataFilter.delivery.name === val.name
+                          ? "text-black font-bold"
+                          : null
+                      }
+                      onClick={() => {
+                        this.getProduct(dataFilter.category.id, val.id);
+                        this.setState({
+                          dataFilter: {
+                            ...this.state.dataFilter,
+                            delivery: val,
                           },
                         });
                       }}
