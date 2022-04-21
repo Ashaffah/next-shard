@@ -118,7 +118,9 @@ class Product extends Component {
               <div className="text-black text-2xl text-center font-bold">
                 Filter
               </div>
-              <div className="text-black text-xl text-left">Kategori</div>
+              <div className="text-black text-xl text-left pb-4 pt-4">
+                Kategori
+              </div>
               {/* {console.log("~~~~~~~~~~~~~~~~", dataFilter.category.name)} */}
               {category.length > 0 &&
                 category.map((val, index) => {
@@ -148,7 +150,9 @@ class Product extends Component {
                     </div>
                   );
                 })}
-              <div className="text-black text-xl text-left">Pengiriman</div>
+              <div className="text-black text-xl text-left pb-4 pt-4">
+                Pengiriman
+              </div>
               {/* {console.log("@@@@@@@@@@@@@@@@@", dataFilter.category)} */}
               {delivery.length > 0 &&
                 delivery.map((val, index) => (
@@ -172,7 +176,7 @@ class Product extends Component {
                         });
                       }}
                     >
-                      {/* <input type="checkbox" className="default:ring-2" /> */}
+                      <input type="checkbox" className="mr-2" />
                       {val.name}
                     </span>
                   </div>
