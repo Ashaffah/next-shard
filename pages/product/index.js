@@ -79,9 +79,10 @@ class Product extends Component {
       });
   };
 
-  getProduct(category = null, page = 1, perPage = 12) {
+  getProduct(category = null, delivery = null, page = 1, perPage = 12) {
     const paramPage = page > 0 ? page : "";
     const paramCategory = category !== null ? `&category=[${category}]` : "";
+    const paramDelivery = delivery !== null ? `&delivery=${delivery}` : "";
     // console.log("paramPage", paramPage)
     console.log("aaaa", category);
     axios
