@@ -10,7 +10,7 @@ class Product extends Component {
     delivery: {},
     dataFilter: {
       page: 1,
-      category: {},
+      category: [],
       delivery: {},
     },
   };
@@ -20,12 +20,47 @@ class Product extends Component {
     this.getCategory();
     this.getDelivery();
   }
+  setFilterCategory = (val) => {
+    // console.log("value", val);
+    // console.log("datafiterkategori", this.state.dataFilter.category);
+    // const page = [];
+    let data = this.state.dataFilter.category;
+    let indexFilter = data
+      .map((event) => {
+        return event.name;
+      })
+      .indexOf(val.name);
+
+    if (indexFilter !== -1) {
+      data.splice(indexFilter, 1);
+    } else {
+      data.push(val);
+    }
+
+    this.setState({
+      dataFilter: {
+        ...this.state.dataFilter,
+        category: data,
+      },
+    });
+
+    let category = [];
+    data.map((e) => {
+      category.push(e.id);
+    });
+    if (category.length < 1) {
+      category = null;
+    }
+    console.log("category", category);
+    this.getProduct(category);
+  };
+
   getDelivery = async () => {
     axios
       .get(`${process.env.NEXT_PUBLIC_MY_BASE_URL}/delivery`)
       .then((res) => {
         this.setState({ delivery: res.data.data });
-        console.log("DELIVERY", res.data.data);
+        // console.log("DELIVERY", res.data.data);
       })
       .catch((error) => {
         alert(error);
@@ -44,13 +79,14 @@ class Product extends Component {
       });
   };
 
-  getProduct(page = 1, perPage = 12) {
-    const paramPage = page !== 1 ? page : "";
+  getProduct(category = null, page = 1, perPage = 12) {
+    const paramPage = page > 0 ? page : "";
+    const paramCategory = category !== null ? `&category=[${category}]` : "";
     // console.log("paramPage", paramPage)
-
+    console.log("aaaa", category);
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_MY_BASE_URL}/products?page=${paramPage}&perPage=${perPage}`
+        `${process.env.NEXT_PUBLIC_MY_BASE_URL}/products?page=${paramPage}&perPage=${perPage}${paramCategory}`
       )
       .then((res) => {
         this.setState({ product: res.data.data });
@@ -71,6 +107,8 @@ class Product extends Component {
   render() {
     const { product, category, dataFilter, delivery } = this.state;
 
+    // console.log("####", dataFilter.category);
+
     return (
       <>
         <Navbar />
@@ -80,41 +118,38 @@ class Product extends Component {
               <div className="text-black text-2xl text-center font-bold">
                 Filter
               </div>
-              <div className="text-black text-xl text-left">Kategory</div>
+              <div className="text-black text-xl text-left">Kategori</div>
               {/* {console.log("~~~~~~~~~~~~~~~~", dataFilter.category.name)} */}
               {category.length > 0 &&
-                category.map((val, index) => (
-                  <div
-                    className="text-black text-left cursor-pointer"
-                    key={index}
-                  >
-                    <span
-                      className={
-                        dataFilter.category.name === val.name
-                          ? "text-black font-bold"
-                          : null
-                      }
+                category.map((val, index) => {
+                  const status =
+                    dataFilter.category
+                      .map((event) => {
+                        return event.name;
+                      })
+                      .indexOf(val.name) > -1;
+                  return (
+                    <div
                       onClick={() => {
-                        this.getProduct(val.id, dataFilter.delivery.id);
-                        // setDataFilter((prevState) => ({
-                        //   ...prevState,
-                        //   category: val,
-                        // }));
-                        this.setState({
-                          dataFilter: {
-                            ...this.state.dataFilter,
-                            category: val,
-                          },
-                        });
+                        this.setFilterCategory(val);
                       }}
+                      className="text-black text-left cursor-pointer"
+                      key={index}
                     >
-                      <input type="checkbox" className="default:ring-2" />
-                      {val.name}
-                    </span>
-                  </div>
-                ))}
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        checked={status}
+                        onChange={() => {}}
+                      />
+                      <span className={status ? "text-black font-bold" : null}>
+                        {val.name}
+                      </span>
+                    </div>
+                  );
+                })}
               <div className="text-black text-xl text-left">Pengiriman</div>
-              {console.log("@@@@@@@@@@@@@@@@@", dataFilter.delivery.name)}
+              {/* {console.log("@@@@@@@@@@@@@@@@@", dataFilter.category)} */}
               {delivery.length > 0 &&
                 delivery.map((val, index) => (
                   <div
@@ -137,7 +172,7 @@ class Product extends Component {
                         });
                       }}
                     >
-                      <input type="checkbox" className="default:ring-2" />
+                      {/* <input type="checkbox" className="default:ring-2" /> */}
                       {val.name}
                     </span>
                   </div>
