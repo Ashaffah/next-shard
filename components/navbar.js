@@ -92,8 +92,8 @@ class Navbar extends Component {
                         key={idx}
                         className={
                           active == menu.name
-                            ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                            ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium cursor-pointer"
                         }
                         onClick={() => {
                           router.push(menu.route);

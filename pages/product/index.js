@@ -11,7 +11,7 @@ class Product extends Component {
     dataFilter: {
       page: 1,
       category: [],
-      delivery: {},
+      delivery: [],
     },
   };
 
@@ -20,6 +20,17 @@ class Product extends Component {
     this.getCategory();
     this.getDelivery();
   }
+
+  setFilterDelivery = () => {
+    let data = this.state.dataFilter.delivery;
+    let delivery = [];
+    data.map((e) => {
+      delivery.push(e.id);
+    });
+
+    console.log("data", data);
+  };
+
   setFilterCategory = (val) => {
     // console.log("value", val);
     // console.log("datafiterkategori", this.state.dataFilter.category);
@@ -84,7 +95,7 @@ class Product extends Component {
     const paramCategory = category !== null ? `&category=[${category}]` : "";
     const paramDelivery = delivery !== null ? `&delivery=${delivery}` : "";
     // console.log("paramPage", paramPage)
-    console.log("aaaa", category);
+    // console.log("aaaa", category);
     axios
       .get(
         `${process.env.NEXT_PUBLIC_MY_BASE_URL}/products?page=${paramPage}&perPage=${perPage}${paramCategory}`
@@ -154,10 +165,13 @@ class Product extends Component {
               <div className="text-black text-xl text-left pb-4 pt-4">
                 Pengiriman
               </div>
-              {/* {console.log("@@@@@@@@@@@@@@@@@", dataFilter.category)} */}
+              {console.log("@@@@@@@@@@@@@@@@@", dataFilter.delivery)}
               {delivery.length > 0 &&
                 delivery.map((val, index) => (
                   <div
+                    onClick={() => {
+                      this.setFilterDelivery(val);
+                    }}
                     className="text-black text-left cursor-pointer"
                     key={index}
                   >
@@ -177,7 +191,11 @@ class Product extends Component {
                         });
                       }}
                     >
-                      <input type="checkbox" className="mr-2" />
+                      <input
+                        type="checkbox"
+                        className="mr-2"
+                        onChange={() => {}}
+                      />
                       {val.name}
                     </span>
                   </div>
