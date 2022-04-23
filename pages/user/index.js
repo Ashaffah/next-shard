@@ -7,6 +7,7 @@ class User extends Component {
     return (
       <>
         <Navbar />
+
         <div>User</div>
       </>
     );
