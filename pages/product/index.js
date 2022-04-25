@@ -21,10 +21,13 @@ class Product extends Component {
     delivery: [],
     chevronCategory: false,
     chevronDelivery: false,
+    chevronHarga: false,
     dataFilter: {
       page: 1,
       category: [],
       delivery: [],
+      minPrice: 0,
+      maxPrice: 0,
     },
   };
 
@@ -33,6 +36,18 @@ class Product extends Component {
     this.getCategory();
     this.getDelivery();
   }
+
+  // getValueRange(page = 1, perPage = 50) {
+  //   const paramPage = page > 0 ? page : "";
+  //   const paramPriceMin = minPrice !== null ? `&priceMin=${minPrice}` : "";
+  //   const paramPriceMax = maxrange !== null ? `&priceMax=${maxrange}` : "";
+
+  //   axios.get(
+  //     `${process.env.NEXT_PUBLIC_MY_BASE_URL}/products?page=${page}&perPage=${perPage}&category=[3]&order=high&priceMin=20000&priceMax=55000`
+  //   ).then((res)=>{
+  //     this.sta
+  //   })
+  // }
 
   setFilterCategory = (val) => {
     // console.log("value", val);
@@ -66,8 +81,15 @@ class Product extends Component {
     if (category.length < 1) {
       category = null;
     }
-    console.log("category", category);
-    this.getProduct(category, catchValueDelivery);
+    // console.log("category", category);
+    this.getProduct(
+      category,
+      catchValueDelivery,
+      this.state.dataFilter.page,
+      12,
+      this.state.dataFilter.minPrice,
+      this.state.dataFilter.maxPrice
+    );
   };
 
   getDelivery = async () => {
@@ -93,16 +115,27 @@ class Product extends Component {
         alert(error);
       });
   };
+  //http://localhost:5000/products?page=1&perPage=50&category=[3]&order=high&priceMin=20000&priceMax=55000
 
-  getProduct(category = null, delivery = null, page = 1, perPage = 12) {
+  getProduct(
+    category = null,
+    delivery = null,
+    page = 1,
+    perPage = 12,
+    minPrice = 0,
+    maxPrice = 0
+  ) {
     const paramPage = page > 0 ? page : "";
     const paramCategory = category !== null ? `&category=[${category}]` : "";
     const paramDelivery = delivery !== null ? `&delivery=${delivery}` : "";
+    const paramPriceMin = minPrice !== 0 ? `&priceMin=${minPrice}` : "";
+    const paramPriceMax = maxPrice !== 0 ? `&priceMax=${maxPrice}` : "";
     // console.log("paramPage", paramPage)
     // console.log("aaaa", category);
+
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_MY_BASE_URL}/products?page=${paramPage}&perPage=${perPage}${paramCategory}${paramDelivery}`
+        `${process.env.NEXT_PUBLIC_MY_BASE_URL}/products?page=${paramPage}&perPage=${perPage}${paramCategory}${paramDelivery}${paramPriceMin}${paramPriceMax}`
       )
       .then((res) => {
         this.setState({ product: res.data.data });
@@ -128,9 +161,10 @@ class Product extends Component {
       delivery,
       chevronCategory,
       chevronDelivery,
+      chevronHarga,
     } = this.state;
 
-    console.log("####", chevronDelivery);
+    // console.log("dataFilter#", dataFilter);
 
     return (
       <>
@@ -142,10 +176,11 @@ class Product extends Component {
                 <div className="text-black text-2xl text-center font-bold">
                   Filter
                 </div>
-                <div className="text-black text-xl text-left pb-4 pt-4 mx-16">
+                <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
                   <div className="flex justify-between">
                     <div>Kategori</div>
                     <div
+                      className="cursor-pointer"
                       onClick={() => {
                         this.setState({ chevronCategory: !chevronCategory });
                       }}
@@ -170,7 +205,7 @@ class Product extends Component {
                         onClick={() => {
                           this.setFilterCategory(val);
                         }}
-                        className="text-black text-left cursor-pointer mx-16"
+                        className="text-black text-left cursor-pointer ml-12 mr-8"
                         key={index}
                       >
                         <input
@@ -189,10 +224,11 @@ class Product extends Component {
                       </div>
                     );
                   })}
-                <div className="text-black text-xl text-left pb-4 pt-4 mx-16">
+                <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
                   <div className="flex justify-between">
                     <div>Pengiriman</div>
                     <div
+                      className="cursor-pointer"
                       onClick={() => {
                         this.setState({ chevronDelivery: !chevronDelivery });
                       }}
@@ -237,16 +273,18 @@ class Product extends Component {
                         } else {
                           catchValueDelivery = catchValueDelivery.id;
                         }
-                        console.log("catchValueDelivery", catchValueDelivery);
-                        console.log("paramCategory", paramCategory);
+                        // console.log("catchValueDelivery", catchValueDelivery);
+                        // console.log("paramCategory", paramCategory);
                         this.getProduct(
                           paramCategory,
                           catchValueDelivery,
-                          1,
-                          12
+                          this.state.dataFilter.page,
+                          12,
+                          this.state.dataFilter.minPrice,
+                          this.state.dataFilter.maxPrice
                         );
                       }}
-                      className="text-black text-left cursor-pointer mx-16"
+                      className="text-black text-left cursor-pointer ml-12 mr-8"
                       key={index}
                     >
                       <span
@@ -270,26 +308,125 @@ class Product extends Component {
                       </span>
                     </div>
                   ))}
-                {/* <input
-                  className="input"
-                  type="number"
-                  placeholder="Harga Minimum"
-                ></input>
-                <input
-                  className="input"
-                  type="number"
-                  placeholder="Harga Maksimum"
-                ></input> */}
+
+                <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
+                  <div className="flex justify-between">
+                    <div>Harga</div>
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => {
+                        this.setState({ chevronHarga: !chevronHarga });
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={chevronHarga ? faChevronDown : faChevronUp}
+                      />
+                    </div>
+                  </div>
+                  {!chevronHarga && (
+                    <div className="justify-left mr-8">
+                      <div className="flex mt-3">
+                        <span className="inline-flex items-center px-3 text-sm text-gray-500 font-bold bg-gray-100 rounded-l-md border border-r-0 border-gray-300">
+                          Rp
+                        </span>
+                        <input
+                          type="number"
+                          className="rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
+                          placeholder="Harga Minimum"
+                          onBlur={(e) => {
+                            this.setState({
+                              dataFilter: {
+                                ...this.state.dataFilter,
+                                minPrice: e.target.value,
+                              },
+                            });
+                            let statusDelivvery = null;
+                            if (
+                              this.state.dataFilter.delivery.id != undefined
+                            ) {
+                              statusDelivvery =
+                                this.state.dataFilter.delivery.id;
+                            }
+
+                            let statusCategory = [];
+                            this.state.dataFilter.category.map((e) => {
+                              statusCategory.push(e.id);
+                            });
+                            if (statusCategory.length < 1) {
+                              statusCategory = null;
+                            }
+                            // console.log(
+                            //   "DELIVERY",
+                            //   this.state.dataFilter.delivery
+                            // );
+                            this.getProduct(
+                              statusCategory,
+                              statusDelivvery,
+                              this.state.dataFilter.page,
+                              12,
+                              e.target.value,
+                              this.state.dataFilter.maxPrice
+                            );
+                          }}
+                        />
+                      </div>
+                      <div className="flex mt-3">
+                        <span className="inline-flex items-center px-3 text-sm text-gray-500 font-bold bg-gray-100 rounded-l-md border border-r-0 border-gray-300">
+                          Rp
+                        </span>
+                        <input
+                          type="number"
+                          className="rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
+                          placeholder="Harga Maksimum"
+                          onBlur={(e) => {
+                            this.setState({
+                              dataFilter: {
+                                ...this.state.dataFilter,
+                                maxPrice: e.target.value,
+                              },
+                            });
+                            let statusDelivvery = null;
+                            if (
+                              this.state.dataFilter.delivery.id != undefined
+                            ) {
+                              statusDelivvery =
+                                this.state.dataFilter.delivery.id;
+                            }
+
+                            let statusCategory = [];
+                            this.state.dataFilter.category.map((e) => {
+                              statusCategory.push(e.id);
+                            });
+                            if (statusCategory.length < 1) {
+                              statusCategory = null;
+                            }
+                            this.getProduct(
+                              statusCategory,
+                              statusDelivvery,
+                              this.state.dataFilter.page,
+                              12,
+                              this.state.dataFilter.minPrice,
+                              e.target.value
+                            );
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex space-x-2 justify-center py-4">
                   <button
                     type="button"
-                    class="inline-block px-6 py-2.5 bg-white text-black font-medium text-bold leading-tight rounded shadow-md hover:bg-red-600 hover:shadow-lg hover:text-white  active:bg-red-600 active:text-white active:shadow-lg transition duration-150 ease-in-out"
+                    className="inline-block px-6 py-2.5 bg-white text-black font-medium text-bold leading-tight rounded shadow-md hover:bg-red-600 hover:shadow-lg hover:text-white  active:bg-red-600 active:text-white active:shadow-lg transition duration-150 ease-in-out"
                     onClick={() => {
                       this.setState({
                         dataFilter: {
                           page: 1,
                           category: [],
                           delivery: [],
+                          minPrice: 0,
+                          maxPrice: 0,
                         },
                       });
                       this.getProduct();
