@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Hidden arrow spinner Chrome, Safari, Edge, Opera */
+input[type="number"].hidden-arrow::-webkit-outer-spin-button,
+input[type="number"].hidden-arrow::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hidden arrow spinner Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}

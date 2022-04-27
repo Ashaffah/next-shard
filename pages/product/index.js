@@ -1,4 +1,4 @@
-import { Component, triggerRef } from "react";
+import React, { Component, triggerRef } from "react";
 import Navbar from "../../components/navbar";
 import axios from "axios";
 import CurrencyFormat from "react-currency-format";
@@ -13,15 +13,28 @@ import {
   faPlus,
   faMinus,
   faPen,
+  faCirleNotch,
 } from "@fortawesome/free-solid-svg-icons";
+
 class Product extends Component {
+  constructor(props) {
+    super(props);
+
+    this.textInputMinPrice = React.createRef();
+    this.textInputMaxPrice = React.createRef();
+  }
   state = {
     product: [],
+    totalProduct: 0,
     category: [],
     delivery: [],
+    activeOrderBy: "Paling Sesuai",
     chevronCategory: false,
     chevronDelivery: false,
     chevronHarga: false,
+    chevronSortBy: false,
+    isLoading: false,
+    pagination: 0,
     dataFilter: {
       page: 1,
       category: [],
@@ -31,27 +44,96 @@ class Product extends Component {
     },
   };
 
-  componentDidMount() {
-    this.getProduct();
+  componentDidMount() {}
+  componentWillUnmount() {
     this.getCategory();
     this.getDelivery();
+    this.getProduct();
+    window.addEventListener("scroll", this.handleScroll);
+    // window.removeEventListener("scroll", this.handleScroll);
   }
 
-  // getValueRange(page = 1, perPage = 50) {
-  //   const paramPage = page > 0 ? page : "";
-  //   const paramPriceMin = minPrice !== null ? `&priceMin=${minPrice}` : "";
-  //   const paramPriceMax = maxrange !== null ? `&priceMax=${maxrange}` : "";
+  handleScroll = (event) => {
+    const bottom =
+      Math.ceil(window.innerHeight + window.scrollY) >=
+      document.documentElement.scrollHeight;
+    if (bottom) {
+      if (this.state.dataFilter.page < this.state.pagination.length) {
+        let dataOrderBy = null;
+        if (this.state.activeOrderBy === "Harga Tertinggi") {
+          dataOrderBy = "high";
+        } else if (this.state.activeOrderBy === "Harga Terendah") {
+          dataOrderBy = "low";
+        } else if (this.state.activeOrderBy === "Terbaru") {
+          dataOrderBy = "new";
+        }
+        let statusCategory = [];
+        this.state.dataFilter.category.map((e) => {
+          statusCategory.push(e.id);
+        });
+        if (statusCategory.length < 1) {
+          statusCategory = null;
+        }
 
-  //   axios.get(
-  //     `${process.env.NEXT_PUBLIC_MY_BASE_URL}/products?page=${page}&perPage=${perPage}&category=[3]&order=high&priceMin=20000&priceMax=55000`
-  //   ).then((res)=>{
-  //     this.sta
-  //   })
-  // }
+        let statusDelivery = null;
+        if (this.state.dataFilter.delivery.id != undefined) {
+          statusDelivery = this.state.dataFilter.delivery.id;
+        }
+        this.setState({
+          dataFilter: {
+            ...this.state.dataFilter,
+            page: this.state.dataFilter.page + 1,
+          },
+        });
+        this.getProduct(
+          statusCategory,
+          statusDelivery,
+          this.state.dataFilter.page + 1,
+          this.state.dataFilter.perPage,
+          this.state.dataFilter.minPrice,
+          this.state.dataFilter.maxPrice,
+          dataOrderBy
+        );
+      }
+    }
+  };
+
+  setOrderBy = (val) => {
+    let catchValueDelivery = this.state.dataFilter.delivery.id;
+    let data = this.state.dataFilter.category;
+    let category = [];
+    data.map((e) => {
+      category.push(e.id);
+    });
+    if (category.length < 1) {
+      category = null;
+    }
+    let dataOrderBy = null;
+    if (val === "Harga Tertinggi") {
+      dataOrderBy = "high";
+    } else if (val === "Harga Terendah") {
+      dataOrderBy = "low";
+    } else if (val === "Terbaru") {
+      dataOrderBy = "new";
+    }
+
+    this.setState({
+      activeOrderBy: val,
+      chevronSortBy: !this.state.chevronSortBy,
+      product: [],
+    });
+    this.getProduct(
+      category,
+      catchValueDelivery,
+      this.state.dataFilter.page,
+      15,
+      this.state.dataFilter.minPrice,
+      this.state.dataFilter.maxPrice,
+      dataOrderBy
+    );
+  };
 
   setFilterCategory = (val) => {
-    // console.log("value", val);
-    // console.log("datafiterkategori", this.state.dataFilter.category);
     // const page = [];
     let catchValueDelivery = this.state.dataFilter.delivery.id;
     let data = this.state.dataFilter.category;
@@ -66,12 +148,21 @@ class Product extends Component {
     } else {
       data.push(val);
     }
-
+    let dataOrderBy = null;
+    if (this.state.activeOrderBy === "Harga Tertinggi") {
+      dataOrderBy = "high";
+    } else if (this.state.activeOrderBy === "Harga Terendah") {
+      dataOrderBy = "low";
+    } else if (this.state.activeOrderBy === "Terbaru") {
+      dataOrderBy = "new";
+    }
     this.setState({
       dataFilter: {
         ...this.state.dataFilter,
         category: data,
+        page: 1,
       },
+      product: [],
     });
 
     let category = [];
@@ -81,14 +172,14 @@ class Product extends Component {
     if (category.length < 1) {
       category = null;
     }
-    // console.log("category", category);
     this.getProduct(
       category,
       catchValueDelivery,
-      this.state.dataFilter.page,
-      12,
+      1,
+      15,
       this.state.dataFilter.minPrice,
-      this.state.dataFilter.maxPrice
+      this.state.dataFilter.maxPrice,
+      dataOrderBy
     );
   };
 
@@ -97,7 +188,6 @@ class Product extends Component {
       .get(`${process.env.NEXT_PUBLIC_MY_BASE_URL}/delivery`)
       .then((res) => {
         this.setState({ delivery: res.data.data });
-        // console.log("DELIVERY", res.data.data);
       })
       .catch((error) => {
         alert(error);
@@ -109,7 +199,6 @@ class Product extends Component {
       .get(`${process.env.NEXT_PUBLIC_MY_BASE_URL}/category`)
       .then((res) => {
         this.setState({ category: res.data.data });
-        // console.log("DATA", res.data.data);
       })
       .catch((error) => {
         alert(error);
@@ -121,33 +210,35 @@ class Product extends Component {
     category = null,
     delivery = null,
     page = 1,
-    perPage = 12,
+    perPage = 15,
     minPrice = 0,
-    maxPrice = 0
+    maxPrice = 0,
+    orderBy = null
   ) {
     const paramPage = page > 0 ? page : "";
     const paramCategory = category !== null ? `&category=[${category}]` : "";
     const paramDelivery = delivery !== null ? `&delivery=${delivery}` : "";
     const paramPriceMin = minPrice !== 0 ? `&priceMin=${minPrice}` : "";
     const paramPriceMax = maxPrice !== 0 ? `&priceMax=${maxPrice}` : "";
-    // console.log("paramPage", paramPage)
-    // console.log("aaaa", category);
-
+    const paramOrderBy = orderBy !== null ? `&order=${orderBy}` : "";
+    this.setState({ isLoading: true });
     axios
       .get(
-        `${process.env.NEXT_PUBLIC_MY_BASE_URL}/products?page=${paramPage}&perPage=${perPage}${paramCategory}${paramDelivery}${paramPriceMin}${paramPriceMax}`
+        `${process.env.NEXT_PUBLIC_MY_BASE_URL}/products?page=${paramPage}&perPage=${perPage}${paramCategory}${paramDelivery}${paramPriceMin}${paramPriceMax}${paramOrderBy}`
       )
       .then((res) => {
-        this.setState({ product: res.data.data });
+        this.setState({
+          product: [...this.state.product, ...res.data.data],
+          isLoading: false,
+          totalProduct: res.data.total_data,
+        });
+        const countData = Math.ceil(res.data.total_data / perPage);
+        let dataPagination = [];
 
-        // const countData = Math.ceil(res.data.total_data / perPage);
-        // let dataPagination = [];
-
-        // for (let i = 0; i < countData; i++) {
-        //   dataPagination.push(i);
-        // }
-        // setPagination(dataPagination);
-        // console.log("DATA", res.data.data);
+        for (let i = 0; i < countData; i++) {
+          dataPagination.push(i);
+        }
+        this.setState({ pagination: dataPagination });
       })
       .catch((error) => {
         alert(error);
@@ -155,27 +246,91 @@ class Product extends Component {
   }
   render() {
     const {
+      isLoading,
       product,
+      totalProduct,
       category,
       dataFilter,
       delivery,
       chevronCategory,
       chevronDelivery,
       chevronHarga,
+      chevronSortBy,
+      activeOrderBy,
     } = this.state;
-
-    // console.log("dataFilter#", dataFilter);
 
     return (
       <>
         <Navbar />
         <div className="container mx-auto mt-20 py-4 md:py-8">
-          <div className="flex flex-wrap">
-            <div className=" w-full lg:w-3/12 xl:w-3/12">
-              <div className="shadow-xl mx-8 my-8">
-                <div className="text-black text-2xl text-center font-bold">
-                  Filter
+          <div className="mx-28 flex justify-between pl-2">
+            <div className="w-2/12">
+              <div className="text-black text-lg text-center font-bold inline-flex items-end">
+                Filter
+              </div>
+            </div>
+            <div className="w-10/12">
+              <div className="flex justify-between pl-6">
+                <div className="text-sm text-gray-600 inline-flex items-center">
+                  Total Data: {totalProduct}
                 </div>
+                <div>
+                  <div className="mr-2 py-auto inline-flex items-center">
+                    Urutkan :
+                  </div>
+                  <div
+                    className="rounded-lg cursor-pointer border w-44 justify-between text-gray-600 bg-white hover:bg-gray-100 hover:border-gray-200 
+                    focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-sm px-4 py-2.5 text-center inline-flex items-center"
+                    onClick={() => {
+                      this.setState({
+                        chevronSortBy: !chevronSortBy,
+                      });
+                    }}
+                  >
+                    {this.state.activeOrderBy}
+                    <FontAwesomeIcon
+                      icon={chevronSortBy ? faChevronUp : faChevronDown}
+                    ></FontAwesomeIcon>
+                  </div>
+                  {/* ); })} */}
+                  {chevronSortBy && (
+                    <div className="flex justify-end">
+                      <div className="border cursor-pointer z-10 w-44 bg-white rounded-b-lg divide-y divide-gray-100 shadow absolute">
+                        <ul className="py-1 text-sm text-gray-600">
+                          {[
+                            "Terbaru",
+                            "Harga Terendah",
+                            "Harga Tertinggi",
+                            "Paling Sesuai",
+                          ].map((val, index) => {
+                            return (
+                              <li key={index}>
+                                <div
+                                  onClick={() => {
+                                    this.setOrderBy(val);
+                                  }}
+                                  className={`${
+                                    val === activeOrderBy
+                                      ? "border-l-4 border-x-orange-700"
+                                      : ""
+                                  } block py-2 px-4 hover:bg-gray-100`}
+                                >
+                                  {val}
+                                </div>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-wrap">
+            <div className="w-full lg:w-3/12 xl:w-3/12">
+              <div className="shadow-xl mx-8 my-8">
                 <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
                   <div className="flex justify-between">
                     <div>Kategori</div>
@@ -191,7 +346,6 @@ class Product extends Component {
                     </div>
                   </div>
                 </div>
-                {/* {console.log("~~~~~~~~~~~~~~~~", dataFilter.category.name)} */}
                 {!chevronCategory &&
                   category.map((val, index) => {
                     const status =
@@ -239,7 +393,6 @@ class Product extends Component {
                     </div>
                   </div>
                 </div>
-                {/* {console.log("@@@@@@@@@@@@@@@@@", dataFilter.delivery)} */}
                 {!chevronDelivery &&
                   delivery.map((valueDelivery, index) => (
                     <div
@@ -253,13 +406,17 @@ class Product extends Component {
                             catchValueDelivery = valueDelivery;
                           }
                         }
-                        this.setState({
-                          dataFilter: {
-                            ...this.state.dataFilter,
-                            delivery: catchValueDelivery,
-                            page: 1,
-                          },
-                        });
+
+                        let dataOrderBy = null;
+                        if (this.state.activeOrderBy === "Harga Tertinggi") {
+                          dataOrderBy = "high";
+                        } else if (
+                          this.state.activeOrderBy === "Harga Terendah"
+                        ) {
+                          dataOrderBy = "low";
+                        } else if (this.state.activeOrderBy === "Terbaru") {
+                          dataOrderBy = "new";
+                        }
                         let paramCategory = [];
                         this.state.dataFilter.category.map((e) => {
                           paramCategory.push(e.id);
@@ -273,15 +430,22 @@ class Product extends Component {
                         } else {
                           catchValueDelivery = catchValueDelivery.id;
                         }
-                        // console.log("catchValueDelivery", catchValueDelivery);
-                        // console.log("paramCategory", paramCategory);
+                        this.setState({
+                          dataFilter: {
+                            ...this.state.dataFilter,
+                            delivery: valueDelivery,
+                            page: 1,
+                          },
+                          product: [],
+                        });
                         this.getProduct(
                           paramCategory,
                           catchValueDelivery,
                           this.state.dataFilter.page,
-                          12,
+                          15,
                           this.state.dataFilter.minPrice,
-                          this.state.dataFilter.maxPrice
+                          this.state.dataFilter.maxPrice,
+                          dataOrderBy
                         );
                       }}
                       className="text-black text-left cursor-pointer ml-12 mr-8"
@@ -331,42 +495,60 @@ class Product extends Component {
                         </span>
                         <input
                           type="number"
-                          className="rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
+                          ref={this.textInputMinPrice}
+                          className="hidden-arrow rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
                           placeholder="Harga Minimum"
                           onBlur={(e) => {
-                            this.setState({
-                              dataFilter: {
-                                ...this.state.dataFilter,
-                                minPrice: e.target.value,
-                              },
-                            });
-                            let statusDelivvery = null;
-                            if (
-                              this.state.dataFilter.delivery.id != undefined
-                            ) {
-                              statusDelivvery =
-                                this.state.dataFilter.delivery.id;
-                            }
+                            let statusPointerLeft = e.target.value;
+                            if (statusPointerLeft > 0) {
+                              let statusDelivery = null;
+                              if (
+                                this.state.dataFilter.delivery.id != undefined
+                              ) {
+                                statusDelivery =
+                                  this.state.dataFilter.delivery.id;
+                              }
 
-                            let statusCategory = [];
-                            this.state.dataFilter.category.map((e) => {
-                              statusCategory.push(e.id);
-                            });
-                            if (statusCategory.length < 1) {
-                              statusCategory = null;
+                              let statusCategory = [];
+                              this.state.dataFilter.category.map((event) => {
+                                statusCategory.push(event.id);
+                              });
+                              if (statusCategory.length < 1) {
+                                statusCategory = null;
+                              }
+
+                              let dataOrderBy = null;
+                              if (
+                                this.state.activeOrderBy === "Harga Tertinggi"
+                              ) {
+                                dataOrderBy = "high";
+                              } else if (
+                                this.state.activeOrderBy === "Harga Terendah"
+                              ) {
+                                dataOrderBy = "low";
+                              } else if (
+                                this.state.activeOrderBy === "Terbaru"
+                              ) {
+                                dataOrderBy = "new";
+                              }
+
+                              this.setState({
+                                dataFilter: {
+                                  ...this.state.dataFilter,
+                                  minPrice: e.target.value,
+                                },
+                                product: [],
+                              });
+                              this.getProduct(
+                                statusCategory,
+                                statusDelivery,
+                                this.state.dataFilter.page,
+                                15,
+                                e.target.value,
+                                this.state.dataFilter.maxPrice,
+                                dataOrderBy
+                              );
                             }
-                            // console.log(
-                            //   "DELIVERY",
-                            //   this.state.dataFilter.delivery
-                            // );
-                            this.getProduct(
-                              statusCategory,
-                              statusDelivvery,
-                              this.state.dataFilter.page,
-                              12,
-                              e.target.value,
-                              this.state.dataFilter.maxPrice
-                            );
                           }}
                         />
                       </div>
@@ -376,38 +558,57 @@ class Product extends Component {
                         </span>
                         <input
                           type="number"
-                          className="rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
+                          ref={this.textInputMaxPrice}
+                          className="hidden-arrow rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
                           placeholder="Harga Maksimum"
                           onBlur={(e) => {
-                            this.setState({
-                              dataFilter: {
-                                ...this.state.dataFilter,
-                                maxPrice: e.target.value,
-                              },
-                            });
-                            let statusDelivvery = null;
-                            if (
-                              this.state.dataFilter.delivery.id != undefined
-                            ) {
-                              statusDelivvery =
-                                this.state.dataFilter.delivery.id;
+                            let statusPointerLeft = e.target.value;
+                            if (statusPointerLeft > 0) {
+                              this.setState({
+                                dataFilter: {
+                                  ...this.state.dataFilter,
+                                  maxPrice: e.target.value,
+                                },
+                                product: [],
+                              });
+                              let statusDelivery = null;
+                              if (
+                                this.state.dataFilter.delivery.id != undefined
+                              ) {
+                                statusDelivery =
+                                  this.state.dataFilter.delivery.id;
+                              }
+                              let dataOrderBy = null;
+                              if (
+                                this.state.activeOrderBy === "Harga Tertinggi"
+                              ) {
+                                dataOrderBy = "high";
+                              } else if (
+                                this.state.activeOrderBy === "Harga Terendah"
+                              ) {
+                                dataOrderBy = "low";
+                              } else if (
+                                this.state.activeOrderBy === "Terbaru"
+                              ) {
+                                dataOrderBy = "new";
+                              }
+                              let statusCategory = [];
+                              this.state.dataFilter.category.map((e) => {
+                                statusCategory.push(e.id);
+                              });
+                              if (statusCategory.length < 1) {
+                                statusCategory = null;
+                              }
+                              this.getProduct(
+                                statusCategory,
+                                statusDelivery,
+                                this.state.dataFilter.page,
+                                15,
+                                this.state.dataFilter.minPrice,
+                                e.target.value,
+                                dataOrderBy
+                              );
                             }
-
-                            let statusCategory = [];
-                            this.state.dataFilter.category.map((e) => {
-                              statusCategory.push(e.id);
-                            });
-                            if (statusCategory.length < 1) {
-                              statusCategory = null;
-                            }
-                            this.getProduct(
-                              statusCategory,
-                              statusDelivvery,
-                              this.state.dataFilter.page,
-                              12,
-                              this.state.dataFilter.minPrice,
-                              e.target.value
-                            );
                           }}
                         />
                       </div>
@@ -428,7 +629,11 @@ class Product extends Component {
                           minPrice: 0,
                           maxPrice: 0,
                         },
+                        product: [],
+                        activeOrderBy: "Paling Sesuai",
                       });
+                      this.textInputMinPrice.current.value = null;
+                      this.textInputMaxPrice.current.value = null;
                       this.getProduct();
                     }}
                   >
@@ -443,7 +648,7 @@ class Product extends Component {
                 {product.map((product, index) => (
                   <div
                     key={index}
-                    className="justify-center w-full lg:my-2 lg:px-2 lg:w-1/4 xl:my-2 xl:px-2 xl:w-1/4"
+                    className="justify-center w-full lg:my-2 lg:px-2 lg:w-1/5 xl:my-2 xl:px-2 xl:w-1/5"
                   >
                     <div className="rounded-lg shadow-lg bg-white max-w-sm h-full">
                       <div>
@@ -507,6 +712,15 @@ class Product extends Component {
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <div className="text-center">
+                {isLoading && (
+                  <FontAwesomeIcon
+                    className="animate-spin text-3xl"
+                    icon={faCircleNotch}
+                  />
+                )}
               </div>
             </div>
           </div>
