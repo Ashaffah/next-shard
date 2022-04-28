@@ -1,4 +1,5 @@
 import React, { Component, triggerRef } from "react";
+import { withRouter } from "next/router";
 import Navbar from "../../components/navbar";
 import axios from "axios";
 import CurrencyFormat from "react-currency-format";
@@ -283,7 +284,7 @@ class Product extends Component {
       chevronBackToTop,
       activeOrderBy,
     } = this.state;
-
+    const { router } = this.props;
     return (
       <>
         <div>
@@ -356,290 +357,326 @@ class Product extends Component {
             </div>
             <div className="flex flex-wrap">
               <div className="w-full lg:w-3/12 xl:w-3/12">
-                <div className="shadow-xl mx-8 my-8">
-                  <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
-                    <div className="flex justify-between">
-                      <div>Kategori</div>
-                      <div
-                        className="cursor-pointer"
-                        onClick={() => {
-                          this.setState({ chevronCategory: !chevronCategory });
-                        }}
-                      >
-                        <FontAwesomeIcon
-                          icon={chevronCategory ? faChevronDown : faChevronUp}
-                        ></FontAwesomeIcon>
+                <div className="shadow-md mx-8 my-8 rounded-md">
+                  <div className="p-4 pr-3 border-b">
+                    <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
+                      <div className="flex justify-between">
+                        <div>Kategori</div>
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => {
+                            this.setState({
+                              chevronCategory: !chevronCategory,
+                            });
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={chevronCategory ? faChevronDown : faChevronUp}
+                          ></FontAwesomeIcon>
+                        </div>
                       </div>
                     </div>
+                    {!chevronCategory &&
+                      category.map((val, index) => {
+                        const status =
+                          dataFilter.category
+                            .map((event) => {
+                              return event.name;
+                            })
+                            .indexOf(val.name) > -1;
+                        return (
+                          <div
+                            onClick={() => {
+                              this.setFilterCategory(val);
+                            }}
+                            className="text-black text-left cursor-pointer ml-12 mr-8"
+                            key={index}
+                          >
+                            <input
+                              type="checkbox"
+                              className="mr-2 accent-orange-600"
+                              checked={status}
+                              onChange={() => {}}
+                            />
+                            <span
+                              className={
+                                status ? "text-orange-600 font-bold" : null
+                              }
+                            >
+                              {val.name}
+                            </span>
+                          </div>
+                        );
+                      })}
                   </div>
-                  {!chevronCategory &&
-                    category.map((val, index) => {
-                      const status =
-                        dataFilter.category
-                          .map((event) => {
-                            return event.name;
-                          })
-                          .indexOf(val.name) > -1;
-                      return (
+                  <div className="p-4 pr-3 border-b">
+                    <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
+                      <div className="flex justify-between">
+                        <div>Pengiriman</div>
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => {
+                            this.setState({
+                              chevronDelivery: !chevronDelivery,
+                            });
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={chevronDelivery ? faChevronDown : faChevronUp}
+                          ></FontAwesomeIcon>
+                        </div>
+                      </div>
+                    </div>
+                    {!chevronDelivery &&
+                      delivery.map((valueDelivery, index) => (
                         <div
                           onClick={() => {
-                            this.setFilterCategory(val);
+                            let catchValueDelivery = {};
+                            if (this.state.dataFilter.delivery != {}) {
+                              if (
+                                this.state.dataFilter.delivery.name !=
+                                valueDelivery.name
+                              ) {
+                                catchValueDelivery = valueDelivery;
+                              }
+                            }
+
+                            let dataOrderBy = null;
+                            if (
+                              this.state.activeOrderBy === "Harga Tertinggi"
+                            ) {
+                              dataOrderBy = "high";
+                            } else if (
+                              this.state.activeOrderBy === "Harga Terendah"
+                            ) {
+                              dataOrderBy = "low";
+                            } else if (this.state.activeOrderBy === "Terbaru") {
+                              dataOrderBy = "new";
+                            }
+                            let paramCategory = [];
+                            this.state.dataFilter.category.map((e) => {
+                              paramCategory.push(e.id);
+                            });
+                            if (paramCategory.length < 1) {
+                              paramCategory = null;
+                            }
+
+                            if (catchValueDelivery.id == undefined) {
+                              catchValueDelivery = null;
+                            } else {
+                              catchValueDelivery = catchValueDelivery.id;
+                            }
+                            this.setState({
+                              dataFilter: {
+                                ...this.state.dataFilter,
+                                delivery: valueDelivery,
+                                page: 1,
+                              },
+                              product: [],
+                            });
+                            this.getProduct(
+                              paramCategory,
+                              catchValueDelivery,
+                              this.state.dataFilter.page,
+                              15,
+                              this.state.dataFilter.minPrice,
+                              this.state.dataFilter.maxPrice,
+                              dataOrderBy
+                            );
                           }}
                           className="text-black text-left cursor-pointer ml-12 mr-8"
                           key={index}
                         >
-                          <input
-                            type="checkbox"
-                            className="mr-2 accent-orange-600"
-                            checked={status}
-                            onChange={() => {}}
-                          />
                           <span
                             className={
-                              status ? "text-orange-600 font-bold" : null
+                              dataFilter.delivery.name === valueDelivery.name
+                                ? "text-orange-600 font-bold"
+                                : null
                             }
                           >
-                            {val.name}
+                            <input
+                              type="checkbox"
+                              className="mr-2 accent-orange-600"
+                              checked={
+                                dataFilter.delivery.name === valueDelivery.name
+                                  ? true
+                                  : false
+                              }
+                              onChange={() => {}}
+                            />
+                            {valueDelivery.name}
                           </span>
                         </div>
-                      );
-                    })}
-                  <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
-                    <div className="flex justify-between">
-                      <div>Pengiriman</div>
-                      <div
-                        className="cursor-pointer"
-                        onClick={() => {
-                          this.setState({ chevronDelivery: !chevronDelivery });
-                        }}
-                      >
-                        <FontAwesomeIcon
-                          icon={chevronDelivery ? faChevronDown : faChevronUp}
-                        ></FontAwesomeIcon>
-                      </div>
-                    </div>
+                      ))}
                   </div>
-                  {!chevronDelivery &&
-                    delivery.map((valueDelivery, index) => (
-                      <div
-                        onClick={() => {
-                          let catchValueDelivery = {};
-                          if (this.state.dataFilter.delivery != {}) {
-                            if (
-                              this.state.dataFilter.delivery.name !=
-                              valueDelivery.name
-                            ) {
-                              catchValueDelivery = valueDelivery;
-                            }
-                          }
-
-                          let dataOrderBy = null;
-                          if (this.state.activeOrderBy === "Harga Tertinggi") {
-                            dataOrderBy = "high";
-                          } else if (
-                            this.state.activeOrderBy === "Harga Terendah"
-                          ) {
-                            dataOrderBy = "low";
-                          } else if (this.state.activeOrderBy === "Terbaru") {
-                            dataOrderBy = "new";
-                          }
-                          let paramCategory = [];
-                          this.state.dataFilter.category.map((e) => {
-                            paramCategory.push(e.id);
-                          });
-                          if (paramCategory.length < 1) {
-                            paramCategory = null;
-                          }
-
-                          if (catchValueDelivery.id == undefined) {
-                            catchValueDelivery = null;
-                          } else {
-                            catchValueDelivery = catchValueDelivery.id;
-                          }
-                          this.setState({
-                            dataFilter: {
-                              ...this.state.dataFilter,
-                              delivery: valueDelivery,
-                              page: 1,
-                            },
-                            product: [],
-                          });
-                          this.getProduct(
-                            paramCategory,
-                            catchValueDelivery,
-                            this.state.dataFilter.page,
-                            15,
-                            this.state.dataFilter.minPrice,
-                            this.state.dataFilter.maxPrice,
-                            dataOrderBy
-                          );
-                        }}
-                        className="text-black text-left cursor-pointer ml-12 mr-8"
-                        key={index}
-                      >
-                        <span
-                          className={
-                            dataFilter.delivery.name === valueDelivery.name
-                              ? "text-orange-600 font-bold"
-                              : null
-                          }
+                  <div className="p-4">
+                    <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
+                      <div className="flex justify-between">
+                        <div>Harga</div>
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => {
+                            this.setState({ chevronHarga: !chevronHarga });
+                          }}
                         >
-                          <input
-                            type="checkbox"
-                            className="mr-2 accent-orange-600"
-                            checked={
-                              dataFilter.delivery.name === valueDelivery.name
-                                ? true
-                                : false
-                            }
-                            onChange={() => {}}
+                          <FontAwesomeIcon
+                            icon={chevronHarga ? faChevronDown : faChevronUp}
                           />
-                          {valueDelivery.name}
-                        </span>
+                        </div>
                       </div>
-                    ))}
+                      {!chevronHarga && (
+                        <div className="justify-left mr-8">
+                          <div className="flex mt-3">
+                            <span className="inline-flex items-center px-3 text-sm text-gray-500 font-bold bg-gray-100 rounded-l-md border border-r-0 border-gray-300">
+                              Rp
+                            </span>
+                            <input
+                              type="number"
+                              ref={this.textInputMinPrice}
+                              className="hidden-arrow rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
+                              placeholder="Harga Minimum"
+                              onBlur={(e) => {
+                                let statusPointerLeft = e.target.value;
+                                if (statusPointerLeft > 0) {
+                                  let statusDelivery = null;
+                                  if (
+                                    this.state.dataFilter.delivery.id !=
+                                    undefined
+                                  ) {
+                                    statusDelivery =
+                                      this.state.dataFilter.delivery.id;
+                                  }
 
-                  <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
-                    <div className="flex justify-between">
-                      <div>Harga</div>
-                      <div
-                        className="cursor-pointer"
-                        onClick={() => {
-                          this.setState({ chevronHarga: !chevronHarga });
-                        }}
-                      >
-                        <FontAwesomeIcon
-                          icon={chevronHarga ? faChevronDown : faChevronUp}
-                        />
+                                  let statusCategory = [];
+                                  this.state.dataFilter.category.map(
+                                    (event) => {
+                                      statusCategory.push(event.id);
+                                    }
+                                  );
+                                  if (statusCategory.length < 1) {
+                                    statusCategory = null;
+                                  }
+
+                                  let dataOrderBy = null;
+                                  if (
+                                    this.state.activeOrderBy ===
+                                    "Harga Tertinggi"
+                                  ) {
+                                    dataOrderBy = "high";
+                                  } else if (
+                                    this.state.activeOrderBy ===
+                                    "Harga Terendah"
+                                  ) {
+                                    dataOrderBy = "low";
+                                  } else if (
+                                    this.state.activeOrderBy === "Terbaru"
+                                  ) {
+                                    dataOrderBy = "new";
+                                  }
+
+                                  this.setState({
+                                    dataFilter: {
+                                      ...this.state.dataFilter,
+                                      minPrice: e.target.value,
+                                    },
+                                    product: [],
+                                  });
+                                  this.getProduct(
+                                    statusCategory,
+                                    statusDelivery,
+                                    this.state.dataFilter.page,
+                                    15,
+                                    e.target.value,
+                                    this.state.dataFilter.maxPrice,
+                                    dataOrderBy
+                                  );
+                                }
+                              }}
+                            />
+                          </div>
+                          <div className="flex mt-3">
+                            <span className="inline-flex items-center px-3 text-sm text-gray-500 font-bold bg-gray-100 rounded-l-md border border-r-0 border-gray-300">
+                              Rp
+                            </span>
+                            <input
+                              type="number"
+                              ref={this.textInputMaxPrice}
+                              className="hidden-arrow rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
+                              placeholder="Harga Maksimum"
+                              onBlur={(e) => {
+                                let statusPointerLeft = e.target.value;
+                                if (statusPointerLeft > 0) {
+                                  this.setState({
+                                    dataFilter: {
+                                      ...this.state.dataFilter,
+                                      maxPrice: e.target.value,
+                                    },
+                                    product: [],
+                                  });
+                                  let statusDelivery = null;
+                                  if (
+                                    this.state.dataFilter.delivery.id !=
+                                    undefined
+                                  ) {
+                                    statusDelivery =
+                                      this.state.dataFilter.delivery.id;
+                                  }
+                                  let dataOrderBy = null;
+                                  if (
+                                    this.state.activeOrderBy ===
+                                    "Harga Tertinggi"
+                                  ) {
+                                    dataOrderBy = "high";
+                                  } else if (
+                                    this.state.activeOrderBy ===
+                                    "Harga Terendah"
+                                  ) {
+                                    dataOrderBy = "low";
+                                  } else if (
+                                    this.state.activeOrderBy === "Terbaru"
+                                  ) {
+                                    dataOrderBy = "new";
+                                  }
+                                  let statusCategory = [];
+                                  this.state.dataFilter.category.map((e) => {
+                                    statusCategory.push(e.id);
+                                  });
+                                  if (statusCategory.length < 1) {
+                                    statusCategory = null;
+                                  }
+                                  this.getProduct(
+                                    statusCategory,
+                                    statusDelivery,
+                                    this.state.dataFilter.page,
+                                    15,
+                                    this.state.dataFilter.minPrice,
+                                    e.target.value,
+                                    dataOrderBy
+                                  );
+                                }
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-3 w-full">
+                      <div className="w-fit">
+                        <div className="p-2 px-4 mb-3 border rounded-full text-sm text-gray-500">
+                          Rp38 rb - Rp99 rb
+                        </div>
+                      </div>
+                      <div className="w-fit">
+                        <div className="p-2 px-4 mb-3 border rounded-full text-sm text-gray-500">
+                          Rp120 rb - Rp250 rb
+                        </div>
+                      </div>
+                      <div className="w-fit">
+                        <div className="p-2 px-4 mb-3 border rounded-full text-sm text-gray-500">
+                          Rp350 rb - Rp400 rb
+                        </div>
                       </div>
                     </div>
-                    {!chevronHarga && (
-                      <div className="justify-left mr-8">
-                        <div className="flex mt-3">
-                          <span className="inline-flex items-center px-3 text-sm text-gray-500 font-bold bg-gray-100 rounded-l-md border border-r-0 border-gray-300">
-                            Rp
-                          </span>
-                          <input
-                            type="number"
-                            ref={this.textInputMinPrice}
-                            className="hidden-arrow rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
-                            placeholder="Harga Minimum"
-                            onBlur={(e) => {
-                              let statusPointerLeft = e.target.value;
-                              if (statusPointerLeft > 0) {
-                                let statusDelivery = null;
-                                if (
-                                  this.state.dataFilter.delivery.id != undefined
-                                ) {
-                                  statusDelivery =
-                                    this.state.dataFilter.delivery.id;
-                                }
-
-                                let statusCategory = [];
-                                this.state.dataFilter.category.map((event) => {
-                                  statusCategory.push(event.id);
-                                });
-                                if (statusCategory.length < 1) {
-                                  statusCategory = null;
-                                }
-
-                                let dataOrderBy = null;
-                                if (
-                                  this.state.activeOrderBy === "Harga Tertinggi"
-                                ) {
-                                  dataOrderBy = "high";
-                                } else if (
-                                  this.state.activeOrderBy === "Harga Terendah"
-                                ) {
-                                  dataOrderBy = "low";
-                                } else if (
-                                  this.state.activeOrderBy === "Terbaru"
-                                ) {
-                                  dataOrderBy = "new";
-                                }
-
-                                this.setState({
-                                  dataFilter: {
-                                    ...this.state.dataFilter,
-                                    minPrice: e.target.value,
-                                  },
-                                  product: [],
-                                });
-                                this.getProduct(
-                                  statusCategory,
-                                  statusDelivery,
-                                  this.state.dataFilter.page,
-                                  15,
-                                  e.target.value,
-                                  this.state.dataFilter.maxPrice,
-                                  dataOrderBy
-                                );
-                              }
-                            }}
-                          />
-                        </div>
-                        <div className="flex mt-3">
-                          <span className="inline-flex items-center px-3 text-sm text-gray-500 font-bold bg-gray-100 rounded-l-md border border-r-0 border-gray-300">
-                            Rp
-                          </span>
-                          <input
-                            type="number"
-                            ref={this.textInputMaxPrice}
-                            className="hidden-arrow rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
-                            placeholder="Harga Maksimum"
-                            onBlur={(e) => {
-                              let statusPointerLeft = e.target.value;
-                              if (statusPointerLeft > 0) {
-                                this.setState({
-                                  dataFilter: {
-                                    ...this.state.dataFilter,
-                                    maxPrice: e.target.value,
-                                  },
-                                  product: [],
-                                });
-                                let statusDelivery = null;
-                                if (
-                                  this.state.dataFilter.delivery.id != undefined
-                                ) {
-                                  statusDelivery =
-                                    this.state.dataFilter.delivery.id;
-                                }
-                                let dataOrderBy = null;
-                                if (
-                                  this.state.activeOrderBy === "Harga Tertinggi"
-                                ) {
-                                  dataOrderBy = "high";
-                                } else if (
-                                  this.state.activeOrderBy === "Harga Terendah"
-                                ) {
-                                  dataOrderBy = "low";
-                                } else if (
-                                  this.state.activeOrderBy === "Terbaru"
-                                ) {
-                                  dataOrderBy = "new";
-                                }
-                                let statusCategory = [];
-                                this.state.dataFilter.category.map((e) => {
-                                  statusCategory.push(e.id);
-                                });
-                                if (statusCategory.length < 1) {
-                                  statusCategory = null;
-                                }
-                                this.getProduct(
-                                  statusCategory,
-                                  statusDelivery,
-                                  this.state.dataFilter.page,
-                                  15,
-                                  this.state.dataFilter.minPrice,
-                                  e.target.value,
-                                  dataOrderBy
-                                );
-                              }
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   <div className="flex space-x-2 justify-center py-4">
@@ -676,7 +713,12 @@ class Product extends Component {
                       key={index}
                       className="justify-center w-full lg:my-2 lg:px-2 lg:w-1/5 xl:my-2 xl:px-2 xl:w-1/5"
                     >
-                      <div className="rounded-lg shadow-lg bg-white max-w-sm h-full">
+                      <div
+                        className="rounded-lg shadow-lg bg-white max-w-sm h-full cursor-pointer"
+                        onClick={() => {
+                          router.push(`/product/detail/${product.code}`);
+                        }}
+                      >
                         <div>
                           <img
                             className="rounded-t-lg w-full"
@@ -975,4 +1017,4 @@ class Product extends Component {
   }
 }
 
-export default Product;
+export default withRouter(Product);
