@@ -525,157 +525,159 @@ class Product extends Component {
                         </div>
                       </div>
                       {!chevronHarga && (
-                        <div className="justify-left mr-8">
-                          <div className="flex mt-3">
-                            <span className="inline-flex items-center px-3 text-sm text-gray-500 font-bold bg-gray-100 rounded-l-md border border-r-0 border-gray-300">
-                              Rp
-                            </span>
-                            <input
-                              type="number"
-                              ref={this.textInputMinPrice}
-                              className="hidden-arrow rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
-                              placeholder="Harga Minimum"
-                              onBlur={(e) => {
-                                let statusPointerLeft = e.target.value;
-                                if (statusPointerLeft > 0) {
-                                  let statusDelivery = null;
-                                  if (
-                                    this.state.dataFilter.delivery.id !=
-                                    undefined
-                                  ) {
-                                    statusDelivery =
-                                      this.state.dataFilter.delivery.id;
-                                  }
-
-                                  let statusCategory = [];
-                                  this.state.dataFilter.category.map(
-                                    (event) => {
-                                      statusCategory.push(event.id);
+                        <>
+                          <div className="justify-left m-auto">
+                            <div className="flex mt-3">
+                              <span className="inline-flex items-center px-3 text-sm text-gray-500 font-bold bg-gray-100 rounded-l-md border border-r-0 border-gray-300">
+                                Rp
+                              </span>
+                              <input
+                                type="number"
+                                ref={this.textInputMinPrice}
+                                className="hidden-arrow rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
+                                placeholder="Harga Minimum"
+                                onBlur={(e) => {
+                                  let statusPointerLeft = e.target.value;
+                                  if (statusPointerLeft > 0) {
+                                    let statusDelivery = null;
+                                    if (
+                                      this.state.dataFilter.delivery.id !=
+                                      undefined
+                                    ) {
+                                      statusDelivery =
+                                        this.state.dataFilter.delivery.id;
                                     }
-                                  );
-                                  if (statusCategory.length < 1) {
-                                    statusCategory = null;
-                                  }
 
-                                  let dataOrderBy = null;
-                                  if (
-                                    this.state.activeOrderBy ===
-                                    "Harga Tertinggi"
-                                  ) {
-                                    dataOrderBy = "high";
-                                  } else if (
-                                    this.state.activeOrderBy ===
-                                    "Harga Terendah"
-                                  ) {
-                                    dataOrderBy = "low";
-                                  } else if (
-                                    this.state.activeOrderBy === "Terbaru"
-                                  ) {
-                                    dataOrderBy = "new";
-                                  }
+                                    let statusCategory = [];
+                                    this.state.dataFilter.category.map(
+                                      (event) => {
+                                        statusCategory.push(event.id);
+                                      }
+                                    );
+                                    if (statusCategory.length < 1) {
+                                      statusCategory = null;
+                                    }
 
-                                  this.setState({
-                                    dataFilter: {
-                                      ...this.state.dataFilter,
-                                      minPrice: e.target.value,
-                                    },
-                                    product: [],
-                                  });
-                                  this.getProduct(
-                                    statusCategory,
-                                    statusDelivery,
-                                    this.state.dataFilter.page,
-                                    15,
-                                    e.target.value,
-                                    this.state.dataFilter.maxPrice,
-                                    dataOrderBy
-                                  );
-                                }
-                              }}
-                            />
+                                    let dataOrderBy = null;
+                                    if (
+                                      this.state.activeOrderBy ===
+                                      "Harga Tertinggi"
+                                    ) {
+                                      dataOrderBy = "high";
+                                    } else if (
+                                      this.state.activeOrderBy ===
+                                      "Harga Terendah"
+                                    ) {
+                                      dataOrderBy = "low";
+                                    } else if (
+                                      this.state.activeOrderBy === "Terbaru"
+                                    ) {
+                                      dataOrderBy = "new";
+                                    }
+
+                                    this.setState({
+                                      dataFilter: {
+                                        ...this.state.dataFilter,
+                                        minPrice: e.target.value,
+                                      },
+                                      product: [],
+                                    });
+                                    this.getProduct(
+                                      statusCategory,
+                                      statusDelivery,
+                                      this.state.dataFilter.page,
+                                      15,
+                                      e.target.value,
+                                      this.state.dataFilter.maxPrice,
+                                      dataOrderBy
+                                    );
+                                  }
+                                }}
+                              />
+                            </div>
+                            <div className="flex mt-3">
+                              <span className="inline-flex items-center px-3 text-sm text-gray-500 font-bold bg-gray-100 rounded-l-md border border-r-0 border-gray-300">
+                                Rp
+                              </span>
+                              <input
+                                type="number"
+                                ref={this.textInputMaxPrice}
+                                className="hidden-arrow rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
+                                placeholder="Harga Maksimum"
+                                onBlur={(e) => {
+                                  let statusPointerLeft = e.target.value;
+                                  if (statusPointerLeft > 0) {
+                                    this.setState({
+                                      dataFilter: {
+                                        ...this.state.dataFilter,
+                                        maxPrice: e.target.value,
+                                      },
+                                      product: [],
+                                    });
+                                    let statusDelivery = null;
+                                    if (
+                                      this.state.dataFilter.delivery.id !=
+                                      undefined
+                                    ) {
+                                      statusDelivery =
+                                        this.state.dataFilter.delivery.id;
+                                    }
+                                    let dataOrderBy = null;
+                                    if (
+                                      this.state.activeOrderBy ===
+                                      "Harga Tertinggi"
+                                    ) {
+                                      dataOrderBy = "high";
+                                    } else if (
+                                      this.state.activeOrderBy ===
+                                      "Harga Terendah"
+                                    ) {
+                                      dataOrderBy = "low";
+                                    } else if (
+                                      this.state.activeOrderBy === "Terbaru"
+                                    ) {
+                                      dataOrderBy = "new";
+                                    }
+                                    let statusCategory = [];
+                                    this.state.dataFilter.category.map((e) => {
+                                      statusCategory.push(e.id);
+                                    });
+                                    if (statusCategory.length < 1) {
+                                      statusCategory = null;
+                                    }
+                                    this.getProduct(
+                                      statusCategory,
+                                      statusDelivery,
+                                      this.state.dataFilter.page,
+                                      15,
+                                      this.state.dataFilter.minPrice,
+                                      e.target.value,
+                                      dataOrderBy
+                                    );
+                                  }
+                                }}
+                              />
+                            </div>
                           </div>
-                          <div className="flex mt-3">
-                            <span className="inline-flex items-center px-3 text-sm text-gray-500 font-bold bg-gray-100 rounded-l-md border border-r-0 border-gray-300">
-                              Rp
-                            </span>
-                            <input
-                              type="number"
-                              ref={this.textInputMaxPrice}
-                              className="hidden-arrow rounded-none rounded-r-lg bg-white border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5"
-                              placeholder="Harga Maksimum"
-                              onBlur={(e) => {
-                                let statusPointerLeft = e.target.value;
-                                if (statusPointerLeft > 0) {
-                                  this.setState({
-                                    dataFilter: {
-                                      ...this.state.dataFilter,
-                                      maxPrice: e.target.value,
-                                    },
-                                    product: [],
-                                  });
-                                  let statusDelivery = null;
-                                  if (
-                                    this.state.dataFilter.delivery.id !=
-                                    undefined
-                                  ) {
-                                    statusDelivery =
-                                      this.state.dataFilter.delivery.id;
-                                  }
-                                  let dataOrderBy = null;
-                                  if (
-                                    this.state.activeOrderBy ===
-                                    "Harga Tertinggi"
-                                  ) {
-                                    dataOrderBy = "high";
-                                  } else if (
-                                    this.state.activeOrderBy ===
-                                    "Harga Terendah"
-                                  ) {
-                                    dataOrderBy = "low";
-                                  } else if (
-                                    this.state.activeOrderBy === "Terbaru"
-                                  ) {
-                                    dataOrderBy = "new";
-                                  }
-                                  let statusCategory = [];
-                                  this.state.dataFilter.category.map((e) => {
-                                    statusCategory.push(e.id);
-                                  });
-                                  if (statusCategory.length < 1) {
-                                    statusCategory = null;
-                                  }
-                                  this.getProduct(
-                                    statusCategory,
-                                    statusDelivery,
-                                    this.state.dataFilter.page,
-                                    15,
-                                    this.state.dataFilter.minPrice,
-                                    e.target.value,
-                                    dataOrderBy
-                                  );
-                                }
-                              }}
-                            />
+                          <div className="mt-3 w-full">
+                            <div className="w-fit mx-auto">
+                              <div className="p-2 px-6 mb-3 border rounded-full text-sm text-gray-500 ">
+                                Rp38 rb - Rp99 rb
+                              </div>
+                            </div>
+                            <div className="w-fit mx-auto">
+                              <div className="p-2 px-6 mb-3 border rounded-full text-sm text-gray-500">
+                                Rp120 rb - Rp250 rb
+                              </div>
+                            </div>
+                            <div className="w-fit mx-auto">
+                              <div className="p-2 px-6 mb-3 border rounded-full text-sm text-gray-500">
+                                Rp350 rb - Rp400 rb
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        </>
                       )}
-                    </div>
-                    <div className="mt-3 w-full">
-                      <div className="w-fit">
-                        <div className="p-2 px-4 mb-3 border rounded-full text-sm text-gray-500">
-                          Rp38 rb - Rp99 rb
-                        </div>
-                      </div>
-                      <div className="w-fit">
-                        <div className="p-2 px-4 mb-3 border rounded-full text-sm text-gray-500">
-                          Rp120 rb - Rp250 rb
-                        </div>
-                      </div>
-                      <div className="w-fit">
-                        <div className="p-2 px-4 mb-3 border rounded-full text-sm text-gray-500">
-                          Rp350 rb - Rp400 rb
-                        </div>
-                      </div>
                     </div>
                   </div>
 
@@ -716,7 +718,7 @@ class Product extends Component {
                       <div
                         className="rounded-lg shadow-lg bg-white max-w-sm h-full cursor-pointer"
                         onClick={() => {
-                          router.push(`/product/detail/${product.code}`);
+                          router.push(`/product/${product.code}`);
                         }}
                       >
                         <div>
