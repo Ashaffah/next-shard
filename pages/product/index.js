@@ -739,7 +739,7 @@ class Product extends Component {
                           {product.selling_price > 0 ? (
                             <>
                               <div className="flex mb-5">
-                                <div className="bg-emerald-500 text-white px-2 mr-2 rounded-lg text-center">
+                                <div className="text-sm font-bold px-2 mr-2 rounded-lg text-center" style="color: rgb(249, 77, 99); background-color: rgb(255, 219, 226);">
                                   {(
                                     (product.selling_price / product.price) *
                                     100
