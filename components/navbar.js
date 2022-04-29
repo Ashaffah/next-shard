@@ -82,7 +82,7 @@ class Navbar extends Component {
                 </button>
               </div>
               <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                <nav className="text-orange-700 text-2xl">
+                <nav className="text-orange-700 text-2xl font-bold">
                   <Link href="/">RF|DA</Link>
                 </nav>
                 <div className="hidden sm:block sm:ml-6 w-full">
