@@ -722,7 +722,7 @@ class Product extends Component {
                         }}
                       >
                         <div>
-                          <img
+                          <image
                             className="rounded-t-lg w-full"
                             src={
                               `${process.env.NEXT_PUBLIC_MY_BASE_URL}/` +
@@ -1002,7 +1002,7 @@ class Product extends Component {
                 <div className="w-full overflow-hidden lg:w-5/12 flex justify-end">
                   <div className="hidden md:block w-12/12">
                     <div className="ant-image">
-                      <img
+                      <image
                         alt="ilustration-footer"
                         className="ant-image-img"
                         src="https://imgur.com/UcNJhtw.jpg"
