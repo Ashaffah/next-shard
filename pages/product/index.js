@@ -358,7 +358,7 @@ class Product extends Component {
               </div>
             </div>
             <div className="flex flex-wrap">
-              <div className="w-full lg:w-3/12 xl:w-3/12">
+              <div className="hidden md:block w-full lg:w-3/12 xl:w-3/12">
                 <div className="shadow-md mx-8 my-8 rounded-md">
                   <div className="p-4 pr-3 border-b">
                     <div className="text-black text-xl text-left pb-4 pt-4 mx-12">
@@ -715,7 +715,7 @@ class Product extends Component {
                   {product.map((product, index) => (
                     <div
                       key={index}
-                      className="justify-center w-full lg:my-2 lg:px-2 lg:w-1/5 xl:my-2 xl:px-2 xl:w-1/5"
+                      className="justify-center p-1.5 md:py-0 lg:my-2 lg:px-2 xl:my-2 xl:px-2 w-1/2 md:w-1/5"
                     >
                       <div
                         className="rounded-lg shadow-lg bg-white max-w-sm h-full cursor-pointer"
@@ -742,7 +742,13 @@ class Product extends Component {
                           {product.selling_price > 0 ? (
                             <>
                               <div className="flex mb-5">
-                                <div className="text-sm font-bold px-2 mr-2 rounded-lg text-center" style="color: rgb(249, 77, 99); background-color: rgb(255, 219, 226);">
+                                <div
+                                  className="text-sm font-bold px-2 mr-2 rounded-lg text-center"
+                                  style={{
+                                    color: "rgb(249, 77, 99)",
+                                    backgroundColor: "rgb(255, 219, 226)",
+                                  }}
+                                >
                                   {(
                                     (product.selling_price / product.price) *
                                     100

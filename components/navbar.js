@@ -226,22 +226,7 @@ class Navbar extends Component {
             </div>
           </div>
 
-          <div className="sm:hidden" id="mobile-menu">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              {menu.map((menu, idx) => (
-                <div
-                  key={idx}
-                  className={
-                    active == menu.name
-                      ? "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                  }
-                >
-                  {menu.name}
-                </div>
-              ))}
-            </div>
-          </div>
+          <div className="sm:hidden" id="mobile-menu"></div>
         </nav>
       </div>
     );

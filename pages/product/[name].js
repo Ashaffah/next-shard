@@ -10,11 +10,17 @@ class DetailProduct extends Component {
         <Navbar />
         <div>
           <div className="flex flex-wrap overflow-hidden mt-24">
-            <div className="w-full overflow-hidden lg:w-1/3">SECTION 1</div>
+            <div className="border overflow-hidden w-full md:w-1/3">
+              SECTION 1
+            </div>
 
-            <div className="w-full overflow-hidden lg:w-1/3">SECTION 2</div>
+            <div className="border overflow-hidden w-full md:w-1/3">
+              SECTION 2
+            </div>
 
-            <div className="w-full overflow-hidden lg:w-1/3">SECTION 3</div>
+            <div className="border overflow-hidden w-full md:w-1/3">
+              SECTION 3
+            </div>
           </div>
         </div>
         <Footer />

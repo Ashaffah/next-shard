@@ -202,6 +202,7 @@ class Footer extends Component {
                     alt="ilustration-footer"
                     className="ant-image-img"
                     src="https://imgur.com/UcNJhtw.jpg"
+                    preview={false}
                   />
                 </div>
               </div>

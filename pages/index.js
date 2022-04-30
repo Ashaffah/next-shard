@@ -1,5 +1,5 @@
 import { Component } from "react";
-
+import Footer from "../components/footer";
 import Navbar from "../components/navbar";
 
 class Home extends Component {
@@ -9,6 +9,7 @@ class Home extends Component {
       <div>
         <Navbar />
         <div className="text-black">Home</div>
+        <Footer />
       </div>
     );
   }
