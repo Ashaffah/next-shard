@@ -1,4 +1,5 @@
 import { Component } from "react";
+import Footer from "../../components/footer";
 import Navbar from "../../components/navbar";
 
 class DetailProduct extends Component {
@@ -16,6 +17,7 @@ class DetailProduct extends Component {
             <div className="w-full overflow-hidden lg:w-1/3">SECTION 3</div>
           </div>
         </div>
+        <Footer />
       </>
     );
   }

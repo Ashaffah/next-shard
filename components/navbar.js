@@ -1,5 +1,6 @@
 import { Component } from "react";
 import Link from "next/link";
+import { Image } from "antd";
 import { withRouter } from "next/router";
 class Navbar extends Component {
   state = {
@@ -212,9 +213,10 @@ class Navbar extends Component {
                       aria-haspopup="true"
                     >
                       <span className="sr-only">Open user menu</span>
-                      <img
-                        className="h-8 w-8 rounded-full"
+                      <Image
                         src="https://avatars.githubusercontent.com/u/35194643?v=4"
+                        className="h-8 w-8 rounded-full"
+                        preview={false}
                         alt=""
                       />
                     </button>
