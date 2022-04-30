@@ -212,7 +212,7 @@ class Navbar extends Component {
                       aria-haspopup="true"
                     >
                       <span className="sr-only">Open user menu</span>
-                      <image
+                      <img
                         className="h-8 w-8 rounded-full"
                         src="https://avatars.githubusercontent.com/u/35194643?v=4"
                         alt=""
