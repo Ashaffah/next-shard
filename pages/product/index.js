@@ -37,7 +37,6 @@ class Product extends Component {
     chevronDelivery: false,
     chevronHarga: false,
     chevronSortBy: false,
-    chevronBackToTop: false,
     isLoading: false,
     pagination: 0,
     dataFilter: {
@@ -283,7 +282,6 @@ class Product extends Component {
       chevronDelivery,
       chevronHarga,
       chevronSortBy,
-      chevronBackToTop,
       activeOrderBy,
     } = this.state;
     const { router } = this.props;
@@ -292,71 +290,74 @@ class Product extends Component {
         <div>
           <Navbar />
           <div className="container mx-auto mt-12 md:mt-20 py-4 md:py-8">
-            <div className="mx-28 flex justify-between pl-2">
-              <div className="w-2/12">
-                <div className="text-black text-2xl text-center font-semibold inline-flex items-end">
-                  Filter
-                </div>
-              </div>
-              <div className="w-10/12">
-                <div className="flex justify-between pl-6">
-                  <div className="text-base text-gray-600 inline-flex items-center font-medium">
-                    Total Data : {totalProduct}
+            <div className="hidden md:block">
+              <div className="mx-28 flex justify-between pl-2">
+                <div className="w-2/12">
+                  <div className="text-black text-2xl text-center font-semibold inline-flex items-end">
+                    Filter
                   </div>
-                  <div>
-                    <div className="mr-2 py-auto inline-flex items-center">
-                      Urutkan :
+                </div>
+                <div className="w-10/12">
+                  <div className="flex justify-between pl-6">
+                    <div className="text-base text-gray-600 inline-flex items-center font-medium">
+                      Total Data : {totalProduct}
                     </div>
-                    <div
-                      className="rounded-lg cursor-pointer border w-44 justify-between text-gray-600 bg-white hover:bg-gray-100 hover:border-gray-200 
-                    focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-sm px-4 py-2.5 text-center inline-flex items-center"
-                      onClick={() => {
-                        this.setState({
-                          chevronSortBy: !chevronSortBy,
-                        });
-                      }}
-                    >
-                      {this.state.activeOrderBy}
-                      <FontAwesomeIcon
-                        icon={chevronSortBy ? faChevronUp : faChevronDown}
-                      ></FontAwesomeIcon>
-                    </div>
-                    {/* ); })} */}
-                    {chevronSortBy && (
-                      <div className="flex justify-end">
-                        <div className="border cursor-pointer z-10 w-44 bg-white rounded-b-lg divide-y divide-gray-100 shadow absolute">
-                          <ul className="py-1 text-sm text-gray-600">
-                            {[
-                              "Terbaru",
-                              "Harga Terendah",
-                              "Harga Tertinggi",
-                              "Paling Sesuai",
-                            ].map((val, index) => {
-                              return (
-                                <li key={index}>
-                                  <div
-                                    onClick={() => {
-                                      this.setOrderBy(val);
-                                    }}
-                                    className={`${
-                                      val === activeOrderBy
-                                        ? "border-l-4 border-x-orange-700"
-                                        : ""
-                                    } block py-2 px-4 hover:bg-gray-100`}
-                                  >
-                                    {val}
-                                  </div>
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </div>
+                    <div>
+                      <div className="mr-2 py-auto inline-flex items-center">
+                        Urutkan :
                       </div>
-                    )}
+                      <div
+                        className="rounded-lg cursor-pointer border w-44 justify-between text-gray-600 bg-white hover:bg-gray-100 hover:border-gray-200 
+                    focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-sm px-4 py-2.5 text-center inline-flex items-center"
+                        onClick={() => {
+                          this.setState({
+                            chevronSortBy: !chevronSortBy,
+                          });
+                        }}
+                      >
+                        {this.state.activeOrderBy}
+                        <FontAwesomeIcon
+                          icon={chevronSortBy ? faChevronUp : faChevronDown}
+                        ></FontAwesomeIcon>
+                      </div>
+                      {/* ); })} */}
+                      {chevronSortBy && (
+                        <div className="flex justify-end">
+                          <div className="border cursor-pointer z-10 w-44 bg-white rounded-b-lg divide-y divide-gray-100 shadow absolute">
+                            <ul className="py-1 text-sm text-gray-600">
+                              {[
+                                "Terbaru",
+                                "Harga Terendah",
+                                "Harga Tertinggi",
+                                "Paling Sesuai",
+                              ].map((val, index) => {
+                                return (
+                                  <li key={index}>
+                                    <div
+                                      onClick={() => {
+                                        this.setOrderBy(val);
+                                      }}
+                                      className={`${
+                                        val === activeOrderBy
+                                          ? "border-l-4 border-x-orange-700"
+                                          : ""
+                                      } block py-2 px-4 hover:bg-gray-100`}
+                                    >
+                                      {val}
+                                    </div>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+
             <div className="flex flex-wrap">
               <div className="hidden md:block w-full lg:w-3/12 xl:w-3/12">
                 <div className="shadow-md mx-8 my-8 rounded-md">
