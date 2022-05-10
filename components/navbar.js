@@ -238,6 +238,11 @@ class Navbar extends Component {
                   </div>
                 </div>
               </div>
+              <div>
+                {
+                  //
+                }
+              </div>
             </div>
           </div>
           <div className="sm:hidden" id="mobile-menu"></div>
