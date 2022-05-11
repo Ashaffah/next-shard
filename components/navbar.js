@@ -14,10 +14,6 @@ class Navbar extends Component {
         name: "Product",
         route: "/product",
       },
-      {
-        name: "Category",
-        route: "/category",
-      },
     ],
   };
   componentDidMount() {
@@ -237,6 +233,11 @@ class Navbar extends Component {
                     </div>
                   </div>
                 </div>
+              </div>
+              <div>
+                {
+                  //
+                }
               </div>
             </div>
           </div>
