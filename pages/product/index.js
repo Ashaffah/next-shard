@@ -17,6 +17,7 @@ import {
   faMinus,
   faPen,
   faCirleNotch,
+  faFilter,
 } from "@fortawesome/free-solid-svg-icons";
 
 class Product extends Component {
@@ -352,6 +353,18 @@ class Product extends Component {
                           </div>
                         </div>
                       )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="md:mx-28 flex flex-wrap">
+              <div className="sm:hidden w-full">
+                <div className="flex items-center text-gray-600 overflow-hidden">
+                  <div className="w-fit">
+                    <div className="w-fit flex items-center border ml-3 mr-2 py-1 rounded-full px-4">
+                      <FontAwesomeIcon className="mr-2" icon={faFilter} />
+                      Filter
                     </div>
                   </div>
                 </div>
@@ -711,7 +724,7 @@ class Product extends Component {
                 </div>
               </div>
 
-              <div className="my-8 w-full lg:w-9/12 xl:w-9/12">
+              <div className="my-2 w-full lg:w-9/12 xl:w-9/12">
                 <div className="flex flex-wrap lg:-mx-2 xl:-mx-2">
                   {product.map((product, index) => (
                     <div
