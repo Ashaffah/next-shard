@@ -5,6 +5,11 @@ import { Image } from "antd";
 import Footer from "../../components/footer";
 import axios from "axios";
 import CurrencyFormat from "react-currency-format";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronDown,
@@ -366,6 +371,41 @@ class Product extends Component {
                       <FontAwesomeIcon className="mr-2" icon={faFilter} />
                       Filter
                     </div>
+                  </div>
+                  <div className="w-9/12">
+                    <Swiper
+                      // install Swiper modules
+                      spaceBetween={6}
+                      slidesPerView={3}
+                      pagination={{ clickable: true }}
+                      scrollbar={{ draggable: true }}
+                      onSwiper={(swiper) => console.log(swiper)}
+                      onSlideChange={() => console.log("slide change")}
+                    >
+                      {category.map((val, index) => {
+                        const status =
+                          dataFilter.category
+                            .map((event) => {
+                              return event.name;
+                            })
+                            .indexOf(val.name) > -1;
+                        return (
+                          <SwiperSlide
+                            className={
+                              status
+                                ? "border border-orange-600 rounded-full mr-2 px-4 py-1 text-orange-600"
+                                : "border w-fit mr-2 py-1 rounded-full px-4"
+                            }
+                            key={index}
+                            onClick={() => {
+                              this.setFilterCategory(val);
+                            }}
+                          >
+                            {val.name}
+                          </SwiperSlide>
+                        );
+                      })}
+                    </Swiper>
                   </div>
                 </div>
               </div>
