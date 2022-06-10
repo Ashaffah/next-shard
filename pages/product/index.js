@@ -748,7 +748,10 @@ class Product extends Component {
                             })
                             .indexOf(val.name) > -1;
                         return (
-                          <SwiperSlide className="width-auto" key={index}>
+                          <SwiperSlide
+                            className="width-auto swiper-container"
+                            key={index}
+                          >
                             <div
                               className={
                                 status
